@@ -9,7 +9,7 @@
 Note , Generated images are saved in  <strong>generated_samples</strong>/ folder</li>
 </ul>
 <h3 class="code-line" data-line-start=12 data-line-end=13 ><a id="DCGAN_Network_architecture_12"></a>DCGAN Network architecture</h3>
-<p class="has-line-data" data-line-start="14" data-line-end="15">Dillinger uses a number of open source projects to work properly:</p>
+<p class="has-line-data" data-line-start="14" data-line-end="15"></p>
 <ul>
 <li class="has-line-data" data-line-start="17" data-line-end="20">
 <p class="has-line-data" data-line-start="17" data-line-end="19">Discriminator<br>
@@ -33,4 +33,5 @@ Note , Generated images are saved in  <strong>generated_samples</strong>/ folder
 <li class="has-line-data" data-line-start="32" data-line-end="33">Udacity Deep learning nanodegree program</li>
 <li class="has-line-data" data-line-start="33" data-line-end="34">GAN hacks by Soumith</li>
 <li class="has-line-data" data-line-start="34" data-line-end="35">hiddenlayer visualizer by waleedka</li>
+<li class="has-line-data" data-line-start="34" data-line-end="35">dillinger for markdown support</li>
 </ul>
