@@ -13,16 +13,16 @@ Note , Generated images are saved in  <strong>generated_samples</strong>/ folder
 <ul>
 <li class="has-line-data" data-line-start="17" data-line-end="20">
 <p class="has-line-data" data-line-start="17" data-line-end="19">Discriminator<br>
-<img src="'assets/discriminator.png'" alt="Discriminator architecture"></p>
+<img src="assets/discriminator.png"></p>
 </li>
 <li class="has-line-data" data-line-start="20" data-line-end="23">
 <p class="has-line-data" data-line-start="20" data-line-end="22">Generator<br>
-<img src="'assets/generator.png'" alt="Generated architecture"></p>
+<img src="assets/generator.png"></p>
 </li>
 </ul>
 <h3 class="code-line" data-line-start=23 data-line-end=24 ><a id="Results_23"></a>Results</h3>
 <p class="has-line-data" data-line-start="24" data-line-end="26">Results can be found in generated_samples folder . Here is sample taken from my notebook.<br>
-<img src="'assets/screenshot.png'" alt="Generated samples"></p>
+<img src="assets/Screenshot.png"></p>
 <h3 class="code-line" data-line-start=27 data-line-end=28 ><a id="More_improvements_to_do_27"></a>More improvements to do</h3>
 <ul>
 <li class="has-line-data" data-line-start="28" data-line-end="29">use it on 64x64 or even larger sizes images</li>
