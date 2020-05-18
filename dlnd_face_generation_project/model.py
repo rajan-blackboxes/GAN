@@ -38,11 +38,17 @@ class Discriminator(nn.Module):
 
         # complete init function
         # input: (32,32,3)
-        self.conv1 = conv(3, conv_dim, 4, batch_norm=False) #(16,16,32)
-        self.conv2 = conv(conv_dim, conv_dim*2, 4) #(8,8, 64)
-        self.conv3 = conv(conv_dim*2, conv_dim*4, 4) #(4,4, 128)
+        self.conv1 = conv(3, conv_dim, 4, batch_norm=False) # (32, 16,16)
+        self.conv2 = conv(conv_dim, conv_dim, 3, stride=1)  # (32, 16, 16)
+        
+        self.conv3 = conv(conv_dim, conv_dim*2, 4, stride=2) #(64, 8,8)
+        self.conv4 = conv(conv_dim*2, conv_dim*2, 3, stride=1) #(64, 8,8)
+        
+        self.conv5 = conv(conv_dim*2, conv_dim*4, 4, stride=2) #(128, 4,4)
+        self.conv6 = conv(conv_dim*4, conv_dim*4, 3, stride=1) #(128, 4,4)
         
         self.fc1 = nn.Linear(4*4*conv_dim*4, 1) #(2048,1)
+        self.dropout = nn.Dropout(0.5)
 
     def forward(self, x):
         """
@@ -50,13 +56,18 @@ class Discriminator(nn.Module):
         :param x: The input to the neural network     
         :return: Discriminator logits; the output of the neural network
         """
-        # define feedforward behavior
         x = F.leaky_relu(self.conv1(x), 0.2)
-        x = F.leaky_relu(self.conv2(x), 0.2)
+        x = x + self.conv2(x)
+        
         x = F.leaky_relu(self.conv3(x), 0.2)
+        x = x + self.conv4(x)
+        
+        x = F.leaky_relu(self.conv5(x), 0.2)
+        self.dropout(x)
+        x = F.leaky_relu(self.conv6(x), 0.2)
         
         x = x.view(-1, 4*4*self.conv_dim*4)
-        
+       
         x = self.fc1(x)
         return x
 
@@ -80,7 +91,7 @@ class Generator(nn.Module):
         self.deconv4_res = deconv(3, 3, 1, stride=1, padding=0)
         self.deconv5_res = deconv(3,3,1, stride=1, padding=0)
         self.deconv6 = deconv(3, 3, 1, stride=1, padding=0, batch_norm=False)
-        self.dropout = nn.Dropout(0.5)
+        self.dropout = nn.Dropout(0.4)
     def forward(self, x):
         """
         Forward propagation of the neural network
@@ -110,12 +121,11 @@ class Generator(nn.Module):
         x = x + self.deconv5_res(x) #(3,32,32)
         self.dropout(x)
         
-        x = x + self.deconv6(x) #(3,32,32)
+        x = self.deconv6(x) #(3,32,32)
 #         self.dropout(x)
         out = torch.tanh(x) 
         
         return out
-
 
 
 
