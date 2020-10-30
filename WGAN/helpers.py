@@ -5,72 +5,69 @@ from torchvision.utils import make_grid
 from tqdm.auto import tqdm
 import matplotlib.pyplot as plt
 from loss import *
+import torch
+
+torch.manual_seed(0)
 
 
-def conv(in_channels, out_channels, kernel_size, stride=2, padding=1, batch_norm=True, **kwargs):
-    """
-    Single convolution layer
+class Conv(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_size=4, stride=2, padding=0, batch_norm=True, **kwargs):
+        super(Conv, self).__init__()
+        padding_mode = kwargs.get('padding_mode', 'zeros')
+        self.batch_norm = batch_norm
+        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, padding_mode=padding_mode)
+        if self.batch_norm:
+            self.bn = nn.BatchNorm2d(out_channels)
 
-    :param in_channels: input channels
-    :param out_channels: output channels
-    :param kernel_size: kernel size
-    :param stride: stride
-    :param padding: padding
-    :param batch_norm: bool , if True, use BatchNormalization
-
-    :return: sequential layer
-    """
-    padding_mode = kwargs.get('padding_mode', 'zeros')
-    bias = kwargs.get('bias', True)
-
-    layers = []
-    conv_layer = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, padding_mode=padding_mode,
-                           bias=bias)
-    layers.append(conv_layer)
-    if batch_norm:
-        layers.append(nn.BatchNorm2d(out_channels))
-    return nn.Sequential(*layers)
+    def forward(self, x):
+        x = self.conv(x)
+        if self.batch_norm:
+            x = self.bn(x)
+        return x
 
 
-def upconv(in_channels, out_channels, kernel_size=1, stride=1, padding=0, batch_norm=True, up=False, **kwargs, ):
-    """
-    Single upsample + convolution layer
+class UpOrTrans(nn.Module):
+    def __init__(self, in_channels, out_channels, mode='trans', kernel_size=1, stride=1, scale_factor=2, padding=0,
+                 batch_norm=True, **kwargs):
+        super(UpOrTrans, self).__init__()
+        self.mode = mode
+        upmode = kwargs.get('upmode', 'nearest')
+        align_corners = kwargs.get('align_corners', None)
+        self.batch_norm = batch_norm
 
-    :param in_channels: input channel
-    :param out_channels: output channel
-    :param kernel_size: size of kernel
-    :param stride: stride
-    :param padding: padding
-    :param batch_norm: bool , if True, use BatchNormalization
-    :param up: bool , if True, use Upsample layer
+        if self.mode == 'up':
+            self.up = nn.Upsample(scale_factor=scale_factor, mode=upmode, align_corners=align_corners)
+            self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding)
 
-    :return: sequential layer
-    """
-    mode = kwargs.get('mode', 'nearest')
-    scale_factor = kwargs.get('scale_factor', 2)
-    align_corners = kwargs.get('align_corners', None)
-    padding_mode = kwargs.get('padding_mode', 'zeros')
+        if self.mode == 'trans':
+            self.trans = nn.ConvTranspose2d(in_channels, out_channels, kernel_size, stride, padding)
 
-    layers = []
-    conv_layer = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, padding_mode=padding_mode)
-    if up:
-        layers.append(nn.Upsample(scale_factor=scale_factor, mode=mode, align_corners=align_corners))
-    layers.append(conv_layer)
-    if batch_norm:
-        layers.append(nn.BatchNorm2d(out_channels))
-    return nn.Sequential(*layers)
+        if self.batch_norm:
+            self.bn = nn.BatchNorm2d(out_channels)
+
+    def forward(self, x, output_size=None):
+        if self.mode == 'up':
+            x = self.up(x)
+            x = self.conv(x)
+        if self.mode == 'trans':
+            x = self.trans(x, output_size=output_size)
+
+        if self.batch_norm:
+            x = self.bn(x)
+        return x
 
 
-def build_dataloader(folder_path, batch):
+def build_dataloader(folder_path, batch, image_dim):
     """
     Builds dataloader from a folder path
 
     :param folder_path: folder where image consists
     :param batch: batch size
+    :param image_dim: image dimension to take
     :return: data_loader: pytorch dataloader
     """
     transform = transforms.Compose([
-        transforms.Resize((128, 128)),
+        transforms.Resize((image_dim, image_dim)),
         transforms.ToTensor(),
         transforms.Normalize((0.5,), (0.5,)),
     ])
@@ -94,19 +91,22 @@ def get_noise(n_samples, z_dim, device='cpu'):
     return torch.randn(n_samples, z_dim, device=device)
 
 
-def show_tensor_images(image_tensor, num_images=5):
+def show_tensor_images(image_tensor, num_images=5, name=None):
     """
     Function for visualizing images: Given a tensor of images, number of images,
     plots and prints the images in an uniform grid.
 
     :param image_tensor: batch of image tensors
     :param num_images: number of images to show
+    :param name: choose name if you want to save
 
     """
     image_tensor = (image_tensor + 1) / 2
     image_unflat = image_tensor.detach().cpu()
     image_grid = make_grid(image_unflat[:num_images], nrow=5)
     plt.imshow(image_grid.permute(1, 2, 0).squeeze())
+    if name is not None:
+        plt.savefig(str(name)+'.jpg')
     plt.show()
 
 
