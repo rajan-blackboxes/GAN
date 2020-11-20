@@ -1,4 +1,4 @@
-<h1 class="code-line" data-line-start=0 data-line-end=1 ><a id="28x28_pixel_DCGAN_face_generator_0"></a>28x28 pixel DCGAN face generator</h1>
+<h1 class="code-line" data-line-start=0 data-line-end=1 ><a id="32x32_pixel_DCGAN_face_generator_0"></a>32x32 pixel DCGAN face generator</h1>
 <p class="has-line-data" data-line-start="3" data-line-end="4">AI to generate people faces. This project refers to udacity 4th project . Architecture is highly inspired by DCGAN paper, cycle GAN, resnets idea and GAN hacks.</p>
 <h1 class="code-line" data-line-start=5 data-line-end=6 ><a id="How_to_run_5"></a>How to run</h1>
 <ul>
@@ -22,7 +22,7 @@ Note , Generated images are saved in  <strong>generated_samples</strong>/ folder
 </ul>
 <h3 class="code-line" data-line-start=23 data-line-end=24 ><a id="Results_23"></a>Results</h3>
 <p class="has-line-data" data-line-start="24" data-line-end="26">Results can be found in generated_samples folder . Here is sample taken from my notebook.<br>
-<img src="assets/Screenshot.png"></p>
+<img src="assets/loop.gif"></p>
 <h3 class="code-line" data-line-start=27 data-line-end=28 ><a id="More_improvements_to_do_27"></a>More improvements to do</h3>
 <ul>
 <li class="has-line-data" data-line-start="28" data-line-end="29">use it on 64x64 or even larger sizes images</li>
